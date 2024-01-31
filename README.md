@@ -9,6 +9,21 @@ The task of transferring massive data sets in Data-Intensive Science (DIS) syste
 
 ## Slice Deployment and Experimentation with the FABRIC Testbed
 
+Import the FABlib API.
+
+```python
+from fabrictestbed_extensions.fablib.fablib import FablibManager as fablib_manager
+
+try:
+    fablib = fablib_manager()
+    
+    fablib.show_config()
+except Exception as e:
+    print(f"Exception: {e}")
+```
+
+Submit a slice request. In addition, the progress of your slice’s build process will be printed.
+
 ```python
 from ipaddress import ip_address, IPv4Address, IPv6Address, IPv4Network, IPv6Network
 
