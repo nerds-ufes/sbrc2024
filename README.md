@@ -12,7 +12,7 @@ The task of transferring massive data sets in Data-Intensive Science (DIS) syste
 ```python
 from ipaddress import ip_address, IPv4Address, IPv6Address, IPv4Network, IPv6Network
 
-slice_name = 'WestToEast'
+slice_name = 'Coast-to-Coast'
 os_name = 'default_rocky_8'
 model_name = 'NIC_ConnectX_5'
 
@@ -26,17 +26,19 @@ try:
     subnet3 = IPv4Network("192.168.3.0/24")
     subnet4 = IPv4Network("192.168.4.0/24")
     
-    # List available subnetworks
+    # Lists of available ips
     net1_available_ips = list(subnet1)[1:]
     net2_available_ips = list(subnet2)[1:]
     net3_available_ips = list(subnet3)[1:]
     net4_available_ips = list(subnet4)[1:]
     
+    # Creates l2 overlay networks
     net1 = slice.add_l2network(name='net1', subnet=subnet1)
     net2 = slice.add_l2network(name='net2', subnet=subnet2)
     net3 = slice.add_l2network(name='net3', subnet=subnet3)
     net4 = slice.add_l2network(name='net4', subnet=subnet4)
     
+    # Adds H1, R1, R2, R3 and H2 nodes to the slice
     h1 = slice.add_node(name='h1', site='SEAT', image=os_name)
     [h1n1, h1n2] = h1.add_component(model=model_name, name='nic1').get_interfaces()
     h1n1.set_mode('config')
