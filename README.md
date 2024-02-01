@@ -101,8 +101,8 @@ except Exception as e:
 
 ```
 
-Connectivity test of directly connected nodes. Note that it is not necessary to instantiate H2.
-```python
+Connectivity test of directly connected nodes. Note that it is not necessary to instantiate `H2` host/DTN.
+```py
 try:
     slice = fablib.get_slice(name=slice_name)
 
@@ -115,6 +115,29 @@ try:
     stdout, stderr = r1.execute(f'ping 192.168.2.2 -c 4') # r1 -> r2
     stdout, stderr = r2.execute(f'ping 192.168.3.2 -c 4') # r2 -> r3
     stdout, stderr = r3.execute(f'ping 192.168.4.2 -c 4') # r3 -> h2
+    
+except Exception as e:
+    print(f"Exception: {e}")
+```
+
+```py
+!ansible-playbook -i inventory.yml -l [EXPERIMENT]  ansible/setup.yml
+```
+
+This configuration to apply CPU Pinning and Non-Uniform Memory Access (NUMA) is especially interesting in systems with multiple processors or sockets. This enforces the allocation of all virtual CPUs (vCPUs) assigned to the VM on the specific NUMA node containing the relevant components (e.g. network interfaces). In a VM, aligning vCPUs and memory with the physical NUMA nodes helps reduce the time it takes for processors to access the memory
+```py
+try:
+    slice = fablib.get_slice(name = slice_name)
+    
+    for node in slice.get_nodes():
+        # Pin all vCPUs for VM to same Numa node as the component
+        node.pin_cpu(component_name='nic1')
+        
+        # Pin memmory for VM to same Numa node as the components
+        node.numa_tune()
+    
+        # Reboot the VM
+        node.os_reboot()
     
 except Exception as e:
     print(f"Exception: {e}")

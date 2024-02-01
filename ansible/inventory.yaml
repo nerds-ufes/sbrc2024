@@ -1,0 +1,19 @@
+all:
+  children:
+    linear:
+      hosts:
+        h1:
+          ansible_ssh_host: [EXTERNAL_IP]
+        r1:
+          ansible_ssh_host: [EXTERNAL_IP]
+        r2:
+          ansible_ssh_host: [EXTERNAL_IP]
+        r3:
+          ansible_ssh_host: [EXTERNAL_IP]
+        h2:
+          ansible_ssh_host: [EXTERNAL_IP]
+  vars:
+    ansible_log_path: ansible.log
+    ansible_python_interpreter: /usr/libexec/platform-python
+    ansible_ssh_common_args: -F fabric_config/ssh_config -i fabric_config/slice_key
+    ansible_ssh_user: rocky
