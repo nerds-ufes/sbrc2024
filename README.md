@@ -124,9 +124,9 @@ except Exception as e:
 
 >[!IMPORTANT]
 >Install [iPerf3](https://iperf.fr/) (v. 3.5.0) and...
-```py
-!ansible-playbook -i inventory.yml -l [EXPERIMENT]  ansible/setup.yml
-```
+>```py
+>!ansible-playbook -i inventory.yml -l [EXPERIMENT]  ansible/setup.yml
+>```
 
 This configuration to apply CPU Pinning and Non-Uniform Memory Access (NUMA) is especially interesting in systems with multiple processors or sockets. This enforces the allocation of all virtual CPUs (vCPUs) assigned to the VM on the specific NUMA node containing the relevant components (e.g. network interfaces). In a VM, aligning vCPUs and memory with the physical NUMA nodes helps reduce the time it takes for processors to access the memory associated with their node. Note that a system restart across all nodes is required for the configuration changes to be implemented.
 ```py
