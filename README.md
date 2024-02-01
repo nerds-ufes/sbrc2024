@@ -101,3 +101,21 @@ except Exception as e:
 
 ```
 
+Connectivity test of directly connected nodes. Note that it is not necessary to instantiate H2.
+```python
+try:
+    slice = fablib.get_slice(name=slice_name)
+
+    h1 = slice.get_node('h1')
+    r1 = slice.get_node('r1')
+    r2 = slice.get_node('r2')
+    r3 = slice.get_node('r3')
+    
+    stdout, stderr = h1.execute(f'ping 192.168.1.2 -c 4') # h1 -> r1
+    stdout, stderr = r1.execute(f'ping 192.168.2.2 -c 4') # r1 -> r2
+    stdout, stderr = r2.execute(f'ping 192.168.3.2 -c 4') # r2 -> r3
+    stdout, stderr = r3.execute(f'ping 192.168.4.2 -c 4') # r3 -> h2
+    
+except Exception as e:
+    print(f"Exception: {e}")
+```
