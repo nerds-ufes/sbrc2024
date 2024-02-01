@@ -181,6 +181,46 @@ except Exception as e:
     print(f"Exception: {e}")
 ```
 
+Code used to investigate how to tune the slice network parameters comparing BBR vs. Cubic in terms of throughput and flow-completion time.
+```py
+try:
+    slice = fablib.get_slice(name=slice_name)
+    
+    h1 = slice.get_node('h1')
+    h2 = slice.get_node('h2')
+    r1 = slice.get_node('r1')
+
+    size, target = '1G', '192.168.4.2'
+    algs = ['cubic','bbr']
+    delays = ['0', '60', '120', '180', '240', '320', '380', '440']
+    buffers = ['100K', '250K', '500K', '1M','5M', '10M', '25M', '50M']
+    rates = ['300']
+
+    r1.execute(f'sudo tc qdisc add dev eth1 root handle 1: htb default 10;\
+                 sudo tc class add dev eth1 parent 1: classid 1:10 htb rate {rates[0]}Mbit;\
+                 sudo tc qdisc add dev eth1 parent 1:10 netem delay 0ms;\
+                 sudo tc qdisc add dev eth2 root handle 1: htb default 10;\
+                 sudo tc class add dev eth2 parent 1: classid 1:10 htb rate {rates[0]}Mbit;\
+                 sudo tc qdisc add dev eth2 parent 1:10 tbf rate {rates[0]}Mbit buffer {rates[0]} limit {rates[0]}')
+    h2.execute(f'iperf3 -s -p 5201 -i 2 -D')
+    for alg in algs:
+        h1.execute(f'sudo sysctl -w net.ipv4.tcp_congestion_control={alg}', quiet=True)
+        h2.execute(f'sudo sysctl -w net.ipv4.tcp_congestion_control={alg}', quiet=True)
+        for delay in delays:
+            r1.execute(f'sudo tc qdisc change dev eth1 parent 1:10 netem delay {delay}ms')
+            for buffer in buffers:
+                for rate in rates:
+                    r1.execute(f'sudo tc qdisc change dev eth2 parent 1:10 tbf rate {rate}Mbit buffer {buffer} limit {buffer}')
+                    h1.execute(f'iperf3 -c {target} -p 5201 -i 2 -n {size} -Z -C {alg} -J | tee > bw-{rate}-sz-{size}-de-{delay}-bf-{buffer}-{alg}.json')
+    h2.execute(f'sudo pkill iperf3')
+    r1.execute(f'sudo tc qdisc del dev eth1 root')
+    r1.execute(f'sudo tc qdisc del dev eth2 root')
+except Exception as e:
+    print(f"Exception: {e}")
+```
+
 ### Data transfer performance over multipath
 
 
+```py
+```
