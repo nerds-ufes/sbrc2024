@@ -124,7 +124,7 @@ except Exception as e:
 !ansible-playbook -i inventory.yml -l [EXPERIMENT]  ansible/setup.yml
 ```
 
-This configuration to apply CPU Pinning and Non-Uniform Memory Access (NUMA) is especially interesting in systems with multiple processors or sockets. This enforces the allocation of all virtual CPUs (vCPUs) assigned to the VM on the specific NUMA node containing the relevant components (e.g. network interfaces). In a VM, aligning vCPUs and memory with the physical NUMA nodes helps reduce the time it takes for processors to access the memory
+This configuration to apply CPU Pinning and Non-Uniform Memory Access (NUMA) is especially interesting in systems with multiple processors or sockets. This enforces the allocation of all virtual CPUs (vCPUs) assigned to the VM on the specific NUMA node containing the relevant components (e.g. network interfaces). In a VM, aligning vCPUs and memory with the physical NUMA nodes helps reduce the time it takes for processors to access the memory associated with their node. Note that a system restart across all nodes is required for the configuration changes to be implemented.
 ```py
 try:
     slice = fablib.get_slice(name = slice_name)
@@ -142,3 +142,38 @@ try:
 except Exception as e:
     print(f"Exception: {e}")
 ```
+
+Static routing configuration so that H1 can reach H2.
+```py
+try:
+    slice = fablib.get_slice(name=slice_name)
+    
+    h1 = slice.get_node('h1')
+    r1 = slice.get_node('r1')
+    r2 = slice.get_node('r2')
+    r3 = slice.get_node('r3')
+    h2 = slice.get_node('h2')
+    
+    stdout, stderr = h1.execute(f'sudo ip a add 192.168.1.1/24 dev eth1')
+    stdout, stderr = r1.execute(f'sudo ip a add 192.168.1.2/24 dev eth1')
+    stdout, stderr = r1.execute(f'sudo ip a add 192.168.2.1/24 dev eth2')
+    stdout, stderr = r2.execute(f'sudo ip a add 192.168.2.2/24 dev eth1')
+    stdout, stderr = r2.execute(f'sudo ip a add 192.168.3.1/24 dev eth2')
+    stdout, stderr = r3.execute(f'sudo ip a add 192.168.3.2/24 dev eth1')
+    stdout, stderr = r3.execute(f'sudo ip a add 192.168.4.1/24 dev eth2')
+    stdout, stderr = h2.execute(f'sudo ip a add 192.168.4.2/24 dev eth1')
+    
+    stdout, stderr = h1.execute(f'sudo ip route add 192.168.4.0/24 via 192.168.1.2')
+    stdout, stderr = r1.execute(f'sudo ip route add 192.168.4.0/24 via 192.168.2.2')
+    stdout, stderr = r2.execute(f'sudo ip route add 192.168.4.0/24 via 192.168.3.2')
+    
+    stdout, stderr = r2.execute(f'sudo ip route add 192.168.1.0/24 via 192.168.2.1')
+    stdout, stderr = r3.execute(f'sudo ip route add 192.168.1.0/24 via 192.168.3.1')
+    stdout, stderr = h2.execute(f'sudo ip route add 192.168.1.0/24 via 192.168.4.1')
+    
+    stdout, stderr = h1.execute(f'ping 192.168.4.2 -c 4')
+    
+except Exception as e:
+    print(f"Exception: {e}")
+```
+
