@@ -9,6 +9,8 @@ The task of transferring massive data sets in Data-Intensive Science (DIS) syste
 
 ## Slice Deployment and Experimentation with the FABRIC Testbed
 
+### Data transfer performance over a coast-to-coast single path
+
 Import the FABlib API.
 
 ```python
@@ -120,6 +122,7 @@ except Exception as e:
     print(f"Exception: {e}")
 ```
 
+Install [iPerf3](https://iperf.fr/) (v. 3.5.0) and...
 ```py
 !ansible-playbook -i inventory.yml -l [EXPERIMENT]  ansible/setup.yml
 ```
@@ -176,4 +179,7 @@ try:
 except Exception as e:
     print(f"Exception: {e}")
 ```
+
+### Data transfer performance over multipath
+
 
