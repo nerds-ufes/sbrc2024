@@ -236,16 +236,16 @@ except Exception as e:
     print(f"Exception: {e}")
 ```
 
-Another way to copy the measurements (outputs) obtained by iPerf3 is to use the same parameters of the repetition loops used in the experiment automation.
+Another way to copy the measurements (outputs) obtained by iPerf3 is to use the same parameters of the repetition loops used in the experiment automation. Replace the `size`, `algs`, `delays`, `buffers` and `rates` parameters with the values needed to select the desired files.
 ```py
 try:
     slice = fablib.get_slice(name=slice_name)
     h1 = slice.get_node('h1')
     
     size = '1G'
-    algs = ['cubic','bbr']
+    algs = ['cubic', 'bbr']
     delays = ['0', '60', '120', '180', '240', '320', '380', '440']
-    buffers = ['100K', '250K', '500K', '1M','5M', '10M', '25M', '50M']
+    buffers = ['100K', '250K', '500K', '1M', '5M', '10M', '25M', '50M']
     rates = ['300']
     
     for algorithm in algorithms:
@@ -257,10 +257,45 @@ except Exception as e:
     print(f"Exception: {e}")
 ```
 
-
+Thread experiment.
+```py
+try:
+    slice = fablib.get_slice(name=slice_name)
+    
+    h1 = slice.get_node('h1')
+    h2 = slice.get_node('h2')
+    
+    target = '192.168.4.2'
+    algorithms = ['cubic','bbr']
+    sizes = ['1G', '5G', '10G']
+    threads = ['1', '2', '3', '5', '10','15', '20', '30']
+    
+    h2.execute(f'iperf3 -s -p 5201 -i 2 -D')
+    
+    for i in range(1,11):
+        for algorithm in algorithms:
+            h1.execute(f'sudo sysctl -w net.ipv4.tcp_congestion_control={algorithm}', quiet=True)
+            h2.execute(f'sudo sysctl -w net.ipv4.tcp_congestion_control={algorithm}', quiet=True)
+            for size in sizes:
+                for thread in threads:
+                    print(f'thread={thread}, size={size}, alg={algorithm}')
+                    h1.execute(f'iperf3 -c {target} -p 5201 -i 2 -n {size} -Z -C {algorithm} -J -P {thread} | tee > th-{thread}-sz-{size}-{algorithm}-{i}.json')
+    h2.execute(f'sudo pkill iperf3')
+    
+except Exception as e:
+    print(f"Exception: {e}")
+```
 
 ### Data transfer performance over multipath
 
-
+As each experiment is normally run in different `.ipynb` files, it is necessary to import the FABlib API again.
 ```py
+from fabrictestbed_extensions.fablib.fablib import FablibManager as fablib_manager
+
+try:
+    fablib = fablib_manager()
+    
+    fablib.show_config()
+except Exception as e:
+    print(f"Exception: {e}")
 ```
