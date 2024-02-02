@@ -125,7 +125,7 @@ except Exception as e:
 >[!IMPORTANT]
 >Install [iPerf3](https://iperf.fr/) (v. 3.5.0) and...
 >```py
->!ansible-playbook -i inventory.yml -l [EXPERIMENT]  ansible/setup.yml
+>!ansible-playbook -i ansible/inventory.yml -l [EXPERIMENT]  ansible/setup.yml
 >```
 
 This configuration to apply CPU Pinning and Non-Uniform Memory Access (NUMA) is especially interesting in systems with multiple processors or sockets. This enforces the allocation of all virtual CPUs (vCPUs) assigned to the VM on the specific NUMA node containing the relevant components (e.g. network interfaces). In a VM, aligning vCPUs and memory with the physical NUMA nodes helps reduce the time it takes for processors to access the memory associated with their node. Note that a system restart across all nodes is required for the configuration changes to be implemented.
@@ -215,6 +215,23 @@ try:
     h2.execute(f'sudo pkill iperf3')
     r1.execute(f'sudo tc qdisc del dev eth1 root')
     r1.execute(f'sudo tc qdisc del dev eth2 root')
+except Exception as e:
+    print(f"Exception: {e}")
+```
+
+Copy files from remote node to local enviroment (GitLab). This approach uses the Linux `ls` command to select files to copy. Replace `[FILE_NAME]` with the name of the file (or a chunk of the files name using `*`) you want to copy. 
+```py
+try:
+    slice = fablib.get_slice(name=slice_name)
+    h1 = slice.get_node('h1')
+
+    stdout,stderr  = h1.execute(f'ls | grep "[FILE_NAME]-*"', quiet=True)
+    
+    files = [i for i in stdout.split()]
+    
+    for file in files:
+        h1.download_file(local_file_path = f'{file}', remote_file_path = f'{file}')
+        
 except Exception as e:
     print(f"Exception: {e}")
 ```
