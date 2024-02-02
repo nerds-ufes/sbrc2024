@@ -43,7 +43,7 @@ try:
     subnet3 = IPv4Network("192.168.3.0/24")
     subnet4 = IPv4Network("192.168.4.0/24")
     
-    # Lists of available ips
+    # Lists of available ips for each subnet
     net1_available_ips = list(subnet1)[1:]
     net2_available_ips = list(subnet2)[1:]
     net3_available_ips = list(subnet3)[1:]
@@ -296,6 +296,122 @@ try:
     fablib = fablib_manager()
     
     fablib.show_config()
+except Exception as e:
+    print(f"Exception: {e}")
+```
+
+
+```py
+try:
+    # Creates a new slice
+    slice = fablib.new_slice(name=slice_name)
+    
+    # Creates the subnetworks
+    subnet1 = IPv4Network("192.168.1.0/24")
+    subnet2 = IPv4Network("192.168.2.0/24")
+    subnet3 = IPv4Network("192.168.3.0/24")
+    subnet4 = IPv4Network("192.168.4.0/24")
+    subnet5 = IPv4Network("192.168.5.0/24")
+    subnet6 = IPv4Network("192.168.6.0/24")
+    subnet7 = IPv4Network("192.168.7.0/24")
+    subnet8 = IPv4Network("192.168.8.0/24")
+    
+    # Lists of available ips for each subnet
+    net1_available_ips = list(subnet1)[1:]
+    net2_available_ips = list(subnet2)[1:]
+    net3_available_ips = list(subnet3)[1:]
+    net4_available_ips = list(subnet4)[1:]
+    net5_available_ips = list(subnet5)[1:]
+    net6_available_ips = list(subnet6)[1:]
+    net7_available_ips = list(subnet7)[1:]
+    net8_available_ips = list(subnet8)[1:]
+    
+    # Creates l2 overlay networks
+    net1 = slice.add_l2network(name='net1', subnet=subnet1)
+    net2 = slice.add_l2network(name='net2', subnet=subnet2)
+    net3 = slice.add_l2network(name='net3', subnet=subnet3)
+    net4 = slice.add_l2network(name='net4', subnet=subnet4)
+    net5 = slice.add_l2network(name='net5', subnet=subnet5)
+    net6 = slice.add_l2network(name='net6', subnet=subnet6)
+    net7 = slice.add_l2network(name='net7', subnet=subnet7)
+    net8 = slice.add_l2network(name='net8', subnet=subnet8)
+
+    # Adds H1, R1, R2, R3, R4, R5 and H2 nodes to the slice
+    h1 = slice.add_node(name='h1', site='UCSD', image=os_name)
+    [h1n1, h1n2] = h1.add_component(model=model_name, name='nic1').get_interfaces()
+    h1n1.set_mode('config')
+    net1.add_interface(h1n1)
+    h1n1.set_ip_addr(net1_available_ips.pop(0))
+    
+    r1 = slice.add_node(name='r1', site='LOSA', image=os_name)
+    [r1n1, r1n2] = r1.add_component(model=model_name, name='nic1').get_interfaces()
+    [r1n3, r1n4] = r1.add_component(model=model_name, name='nic2').get_interfaces()
+    r1n1.set_mode('config')
+    net1.add_interface(r1n1)
+    r1n1.set_ip_addr(net1_available_ips.pop(0))
+    r1n2.set_mode('config')
+    net2.add_interface(r1n2)
+    r1n2.set_ip_addr(net2_available_ips.pop(0))
+    r1n3.set_mode('config')
+    net6.add_interface(r1n3)
+    r1n3.set_ip_addr(net6_available_ips.pop(0))
+    r1n4.set_mode('config')
+    net7.add_interface(r1n4)
+    r1n4.set_ip_addr(net7_available_ips.pop(0))
+    
+    r2 = slice.add_node(name='r2', site='SEAT', image=os_name)
+    [r2n1, r2n2] = r2.add_component(model=model_name, name='nic1').get_interfaces()
+    r2n1.set_mode('config')
+    net2.add_interface(r2n1)
+    r2n1.set_ip_addr(net2_available_ips.pop(0))
+    r2n2.set_mode('config')
+    net3.add_interface(r2n2)
+    r2n2.set_ip_addr(net3_available_ips.pop(0))
+    
+    r3 = slice.add_node(name='r3', site='SALT', image=os_name)
+    [r3n1, r3n2] = r3.add_component(model=model_name, name='nic1').get_interfaces()
+    [r3n3, r3n4] = r3.add_component(model=model_name, name='nic2').get_interfaces()
+    r3n1.set_mode('config')
+    net3.add_interface(r3n1)
+    r3n1.set_ip_addr(net3_available_ips.pop(0))
+    r3n2.set_mode('config')
+    net4.add_interface(r3n2)
+    r3n2.set_ip_addr(net4_available_ips.pop(0))
+    r3n3.set_mode('config')
+    net7.add_interface(r3n3)
+    r3n3.set_ip_addr(net7_available_ips.pop(0))
+    
+    r4 = slice.add_node(name='r4', site='STAR', image=os_name)
+    [r4n1, r4n2] = r4.add_component(model=model_name, name='nic1').get_interfaces()
+    [r4n3, r4n4] = r4.add_component(model=model_name, name='nic2').get_interfaces()
+    r4n1.set_mode('config')
+    net4.add_interface(r4n1)
+    r4n1.set_ip_addr(net4_available_ips.pop(0))
+    r4n2.set_mode('config')
+    net5.add_interface(r4n2)
+    r4n2.set_ip_addr(net5_available_ips.pop(0))
+    r4n3.set_mode('config')
+    net8.add_interface(r4n3)
+    r4n3.set_ip_addr(net8_available_ips.pop(0))
+    
+    r5 = slice.add_node(name='r5', site='DALL', image=os_name)
+    [r5n1, r5n2] = r5.add_component(model=model_name, name='nic1').get_interfaces()
+    r5n1.set_mode('config')
+    net5.add_interface(r5n1)
+    r5n1.set_ip_addr(net5_available_ips.pop(0))
+    r5n2.set_mode('config')
+    net6.add_interface(r5n2)
+    r5n2.set_ip_addr(net6_available_ips.pop(0))
+    
+    h2 = slice.add_node(name='h2', site='MICH', image=os_name)
+    [h2n1, h2n2] = h2.add_component(model=model_name, name='nic1').get_interfaces()
+    h2n1.set_mode('config')
+    net8.add_interface(h2n1)
+    h2n1.set_ip_addr(net8_available_ips.pop(0))
+    
+    # Submit Slice Request
+    slice.submit()
+    
 except Exception as e:
     print(f"Exception: {e}")
 ```
