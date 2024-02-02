@@ -305,7 +305,7 @@ except Exception as e:
     print(f"Exception: {e}")
 ```
 
-
+The slice is a multipath topology composed by 7 nodes (H1, R1, R2, R3, R4, R5, and H2), respectively, geographically located in the following sites: `USCD` (USCD), `LOSA` (Los Angeles), `SEAT` (Seattle), `SALT` (Salt Lake City), `STAR` (StarLight), `DALL` (Dallas), and `MICH` (University of Michigan), as shown in Fig. 2 (Left) and (Right). The Red, Green and Blue paths have respectively the average RTT of: `82.2 ms`, `78.6 ms` and `62.5 ms`.
 ```py
 try:
     # Creates a new slice
@@ -442,6 +442,48 @@ try:
     stdout, stderr = r5.execute(f'ping 192.168.6.1 -c 4') # r5 -> r1
     stdout, stderr = r1.execute(f'ping 192.168.7.2 -c 4') # r1 -> r3
     stdout, stderr = h2.execute(f'ping 192.168.8.1 -c 4') # h2 -> r4
+except Exception as e:
+    print(f"Exception: {e}")
+```
+
+Adding static routes.
+```py
+try:
+    slice = fablib.get_slice(name = slice_name)
+    
+    h1 = slice.get_node('h1')
+    r1 = slice.get_node('r1')
+    r2 = slice.get_node('r2')
+    r3 = slice.get_node('r3')
+    r4 = slice.get_node('r4')
+    r5 = slice.get_node('r5')
+    h2 = slice.get_node('h2')
+    
+    # Red Path Config
+    stdout, stderr = h1.execute(f'sudo ip route add 192.168.8.0/24 via 192.168.1.2')
+    stdout, stderr = r1.execute(f'sudo ip route add 192.168.8.0/24 via 192.168.2.2')
+    stdout, stderr = r2.execute(f'sudo ip route add 192.168.1.0/24 via 192.168.2.1')
+    stdout, stderr = r2.execute(f'sudo ip route add 192.168.8.0/24 via 192.168.3.2')
+    stdout, stderr = r3.execute(f'sudo ip route add 192.168.1.0/24 via 192.168.3.1')
+    stdout, stderr = r3.execute(f'sudo ip route add 192.168.8.0/24 via 192.168.4.2')
+    stdout, stderr = r4.execute(f'sudo ip route add 192.168.1.0/24 via 192.168.4.1')
+    stdout, stderr = h2.execute(f'sudo ip route add 192.168.1.0/24 via 192.168.8.1')
+    stdout, stderr = h1.execute(f'ping 192.168.8.2 -c 4')
+    
+    # Green Path Config
+    stdout, stderr = r1.execute(f'sudo ip route add 192.168.8.0/24 via 192.168.7.2 tos 0x04')
+    stdout, stderr = r3.execute(f'sudo ip route add 192.168.1.0/24 via 192.168.7.1 tos 0x04')
+    stdout, stderr = r3.execute(f'sudo ip route add 192.168.8.0/24 via 192.168.4.2 tos 0x04')
+    stdout, stderr = r4.execute(f'sudo ip route add 192.168.1.0/24 via 192.168.4.1 tos 0x04')
+    stdout, stderr = h1.execute(f'ping 192.168.8.2 -c 4 -Q 0x04')
+    
+    # Blue Path Config
+    stdout, stderr = r1.execute(f'sudo ip route add 192.168.8.0/24 via 192.168.6.2 tos 0x08')
+    stdout, stderr = r5.execute(f'sudo ip route add 192.168.1.0/24 via 192.168.6.1')
+    stdout, stderr = r5.execute(f'sudo ip route add 192.168.8.0/24 via 192.168.5.1')
+    stdout, stderr = r4.execute(f'sudo ip route add 192.168.1.0/24 via 192.168.5.2 tos 0x08')
+    stdout, stderr = h1.execute(f'ping 192.168.8.2 -c 4 -Q 0x08')
+    
 except Exception as e:
     print(f"Exception: {e}")
 ```
