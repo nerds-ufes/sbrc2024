@@ -5,7 +5,7 @@ Official repository for the paper "Sliced WANs for Data-Intensive Science: Deplo
 
 ## Abstract
 
-The task of transferring massive data sets in Data-Intensive Science (DIS) systems, such as those generated from high-energy experiments at CERN in the EU and at Sirius synchrotron light source in Brazil, often rely on physical WAN infrastructure for network connectivity that is provided by various National Research and Education Networks (NRENs), including ESnet, Géant, Internet2, RNP, among others. Sliced WANs bring a new paradigm for infrastructure yet to be exploited by DIS, but a realistic study of these particular systems poses a significant challenge due to their complexity, scale, and the number of factors affecting the data transport. In this paper, we take the first steps in addressing these challenges by deploying and evaluating a virtual infrastructure for data transport within a representative national-scale WAN. Our approach here encompasses two main aspects: i) Evaluating the performance of TCP congestion control algorithms (BBR versus Cubic) when only a single path is available for the data transfer; and ii) Assessing the performance of flow completion times (related to the management of bandwidth allocation) for sets of interdependent transfers environment provided by a network slice.
+The task of transferring massive data sets in Data-Intensive Science (DIS) systems, such as those generated from high-energy experiments at CERN in the EU and at Sirius synchrotron light source in Brazil, often rely on physical WAN infrastructure for network connectivity that is provided by various National Research and Education Networks (NRENs), including ESnet, Géant, Internet2, RNP, among others. Sliced WANs bring a new paradigm for infrastructure yet to be exploited by DIS, but a realistic study of these particular systems poses a significant challenge due to their complexity, scale, and the number of factors affecting the data transport. In this paper, we take the first steps in addressing these challenges by deploying and evaluating a virtual infrastructure for data transport within a representative national-scale WAN. Our approach here encompasses two main aspects: **i)** Evaluating the performance of TCP congestion control algorithms (BBR versus Cubic) when only a single path is available for the data transfer; and **ii)** Assessing the performance of flow completion times (related to the management of bandwidth allocation) for sets of interdependent transfers environment provided by a network slice.
 
 ## Slice Deployment and Experimentation with the FABRIC Testbed
 
@@ -235,6 +235,29 @@ try:
 except Exception as e:
     print(f"Exception: {e}")
 ```
+
+Another way to copy the measurements (outputs) obtained by iPerf3 is to use the same parameters of the repetition loops used in the experiment automation.
+```py
+try:
+    slice = fablib.get_slice(name=slice_name)
+    h1 = slice.get_node('h1')
+    
+    size = '1G'
+    algs = ['cubic','bbr']
+    delays = ['0', '60', '120', '180', '240', '320', '380', '440']
+    buffers = ['100K', '250K', '500K', '1M','5M', '10M', '25M', '50M']
+    rates = ['300']
+    
+    for algorithm in algorithms:
+        for delay in delays:
+            for buffer in buffers:
+                for rate in rates:
+                    h1.download_file(local_file_path = f'bw-{rate}-sz-{size}-de-{delay}-bf-{buffer}-{algorithm}.json', remote_file_path = f'bw-{rate}-sz-{size}-de-{delay}-bf-{buffer}-{algorithm}.json')
+except Exception as e:
+    print(f"Exception: {e}")
+```
+
+
 
 ### Data transfer performance over multipath
 
