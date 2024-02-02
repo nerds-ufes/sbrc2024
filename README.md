@@ -7,6 +7,11 @@ Official repository for the paper "Sliced WANs for Data-Intensive Science: Deplo
 
 The task of transferring massive data sets in Data-Intensive Science (DIS) systems, such as those generated from high-energy experiments at CERN in the EU and at Sirius synchrotron light source in Brazil, often rely on physical WAN infrastructure for network connectivity that is provided by various National Research and Education Networks (NRENs), including ESnet, Géant, Internet2, RNP, among others. Sliced WANs bring a new paradigm for infrastructure yet to be exploited by DIS, but a realistic study of these particular systems poses a significant challenge due to their complexity, scale, and the number of factors affecting the data transport. In this paper, we take the first steps in addressing these challenges by deploying and evaluating a virtual infrastructure for data transport within a representative national-scale WAN. Our approach here encompasses two main aspects: **i)** Evaluating the performance of TCP congestion control algorithms (BBR versus Cubic) when only a single path is available for the data transfer; and **ii)** Assessing the performance of flow completion times (related to the management of bandwidth allocation) for sets of interdependent transfers environment provided by a network slice.
 
+## Contents
+
+- [Data transfer performance over a coast-to-coast single path](#data-transfer-performance-over-a-coast-to-coast-single-path)
+- [Data transfer performance over multipath](#data-transfer-performance-over-multipath)
+
 ## Slice Deployment and Experimentation with the FABRIC Testbed
 
 ### Data transfer performance over a coast-to-coast single path
@@ -412,6 +417,31 @@ try:
     # Submit Slice Request
     slice.submit()
     
+except Exception as e:
+    print(f"Exception: {e}")
+```
+
+Connectivity test of directly connected nodes.
+```py
+try:
+    slice = fablib.get_slice(name=slice_name)
+
+    h1 = slice.get_node('h1')
+    r1 = slice.get_node('r1')
+    r2 = slice.get_node('r2')
+    r3 = slice.get_node('r3')
+    r4 = slice.get_node('r4')
+    r5 = slice.get_node('r5')
+    h2 = slice.get_node('h2')
+    
+    stdout, stderr = h1.execute(f'ping 192.168.1.2 -c 4') # h1 -> r1
+    stdout, stderr = r2.execute(f'ping 192.168.2.1 -c 4') # r1 -> r2
+    stdout, stderr = r2.execute(f'ping 192.168.3.2 -c 4') # r2 -> r3
+    stdout, stderr = r3.execute(f'ping 192.168.4.2 -c 4') # r3 -> r4
+    stdout, stderr = r4.execute(f'ping 192.168.5.2 -c 4') # r4 -> r5
+    stdout, stderr = r5.execute(f'ping 192.168.6.1 -c 4') # r5 -> r1
+    stdout, stderr = r1.execute(f'ping 192.168.7.2 -c 4') # r1 -> r3
+    stdout, stderr = h2.execute(f'ping 192.168.8.1 -c 4') # h2 -> r4
 except Exception as e:
     print(f"Exception: {e}")
 ```
