@@ -29,6 +29,7 @@ except Exception as e:
     print(f"Exception: {e}")
 ```
 
+The slice sets a coast-to-coast linear topology with 5 nodes (`H1`, `R1`, `R2`, `R3`, and `H2`) deployed, respectively, geographically located at the following sites: `SEAT` (Seattle), `SALT` (Salt Lake City), `STAR` (StarLight), `NEWY` (New York) and `MASS` (UMass), as shown in Fig. 1.
 Submit a slice request. In addition, the progress of your slice’s build process will be printed.
 
 ```python
@@ -306,7 +307,14 @@ except Exception as e:
 ```
 
 The slice is a multipath topology composed by 7 nodes (H1, R1, R2, R3, R4, R5, and H2), respectively, geographically located in the following sites: `USCD` (USCD), `LOSA` (Los Angeles), `SEAT` (Seattle), `SALT` (Salt Lake City), `STAR` (StarLight), `DALL` (Dallas), and `MICH` (University of Michigan), as shown in Fig. 2 (Left) and (Right). The Red, Green and Blue paths have respectively the average RTT of: `82.2 ms`, `78.6 ms` and `62.5 ms`.
+
 ```py
+from ipaddress import ip_address, IPv4Address, IPv6Address, IPv4Network, IPv6Network
+
+slice_name = 'Coast-to-Coast'
+os_name = 'default_rocky_8'
+model_name = 'NIC_ConnectX_5'
+
 try:
     # Creates a new slice
     slice = fablib.new_slice(name=slice_name)
@@ -487,3 +495,9 @@ try:
 except Exception as e:
     print(f"Exception: {e}")
 ```
+
+>[!IMPORTANT]
+>Install [iproute-tc](https://www.mankier.com/package/iproute-tc) (v. ), [iPerf3](https://iperf.fr/) (v. 3.5.0), nano (v.), tcpdump and traceroute (v.) on every node of the topology.
+>```py
+>!ansible-playbook -i ansible/inventory.yml -l [EXPERIMENT]  ansible/setup.yml
+>```
