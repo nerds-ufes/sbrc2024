@@ -12,6 +12,22 @@ all:
           ansible_ssh_host: [EXTERNAL_IP]
         h2:
           ansible_ssh_host: [EXTERNAL_IP]
+    multipath:
+      hosts:
+        h1:
+          ansible_ssh_host: [EXTERNAL_IP]
+        r1:
+          ansible_ssh_host: [EXTERNAL_IP]
+        r2:
+          ansible_ssh_host: [EXTERNAL_IP]
+        r3:
+          ansible_ssh_host: [EXTERNAL_IP]
+        r4:
+          ansible_ssh_host: [EXTERNAL_IP]
+        r5:
+          ansible_ssh_host: [EXTERNAL_IP]
+        h2:
+          ansible_ssh_host: [EXTERNAL_IP]
   vars:
     ansible_log_path: ansible.log
     ansible_python_interpreter: /usr/libexec/platform-python
