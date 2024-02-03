@@ -35,7 +35,7 @@ Submit a slice request. In addition, the progress of your slice’s build proces
 ```python
 from ipaddress import ip_address, IPv4Address, IPv6Address, IPv4Network, IPv6Network
 
-slice_name = 'Coast-to-Coast'
+slice_name = 'Linear'
 os_name = 'default_rocky_8'
 model_name = 'NIC_ConnectX_5'
 
@@ -311,7 +311,7 @@ The slice is a multipath topology composed by 7 nodes (H1, R1, R2, R3, R4, R5, a
 ```py
 from ipaddress import ip_address, IPv4Address, IPv6Address, IPv4Network, IPv6Network
 
-slice_name = 'Coast-to-Coast'
+slice_name = 'Multipath'
 os_name = 'default_rocky_8'
 model_name = 'NIC_ConnectX_5'
 
@@ -501,3 +501,63 @@ except Exception as e:
 >```py
 >!ansible-playbook -i ansible/inventory.yml -l [EXPERIMENT]  ansible/setup.yml
 >```
+
+We set the capacity of crossing links (l1 = R3 ⇐⇒ R4 and l2 = R1 ⇐⇒ R5) seeking for the point that achieves maximal performance for transferring the flows. We refer to an assignment of capacity values to the links as a slice configuration S1. For example, in the configuration S1, we set the links l1 = R3 ⇐⇒ R4 = 50M bps and l2 = R1 ⇐⇒ R5 = 100 from the topology of Fig. 8 (Right), so that the ratio between the crossing links are r = l1/l2 = 0.5.
+
+```py
+import time
+
+try:
+    slice = fablib.get_slice(name = slice_name)
+    
+    h1 = slice.get_node('h1')
+    h2 = slice.get_node('h2')
+    r1 = slice.get_node('r1')
+    r3 = slice.get_node('r3')
+    r5 = slice.get_node('r5')
+    
+    size, target = '1G', '192.168.8.2'
+    ports = ['5201', '5202', '5203', '5204', '5205', '5206']
+    rates = ['200mbit', '100mbit']
+    threads = []
+
+    tcr1 = r1.execute_thread(f'sudo tc qdisc add dev eth1 root handle 1: htb default 10;\
+                               sudo tc class add dev eth1 parent 1: classid 1:10 htb rate {size}')
+    
+    threads.insert(0, tcr1)
+
+    for i, port in enumerate(ports):
+        threads.insert(i+1, h2.execute_thread(f'iperf3 -s -p {port} -i 2 -D'))
+    
+    flow1 = h1.execute_thread(f'iperf3 -c {target} -p {ports[0]} -i 2 -n {size} -J -Z | tee > flow1.json')
+    flow2 = h1.execute_thread(f'iperf3 -c {target} -p {ports[1]} -i 2 -n {size} -J -Z -S 0x04 | tee > flow2.json')
+    flow3 = h1.execute_thread(f'iperf3 -c {target} -p {ports[2]} -i 2 -n {size} -J -Z -S 0x08 | tee > flow3.json')
+
+    threads.extend([flow1, flow2, flow3])
+    
+    time.sleep(10)
+    
+    tcr3 = r3.execute_thread(f'sudo tc qdisc add dev eth2 root handle 1: htb default 10;\
+                               sudo tc class add dev eth2 parent 1: classid 1:10 htb rate {rates[0]}')
+    
+    tcr5 = r5.execute_thread(f'sudo tc qdisc add dev eth1 root handle 1: htb default 10;\
+                               sudo tc class add dev eth1 parent 1: classid 1:10 htb rate {rates[0]}')
+    
+    flow4 = h1.execute_thread(f'iperf3 -c {target} -p {ports[3]} -i 2 -n {size} -J -Z | tee > flow4.json')
+    flow5 = h1.execute_thread(f'iperf3 -c {target} -p {ports[4]} -i 2 -n {size} -J -Z -S 0x04 | tee > flow5.json')
+    flow6 = h1.execute_thread(f'iperf3 -c {target} -p {ports[5]} -i 2 -n {size} -J -Z -S 0x08 | tee > flow6.json')
+
+    threads.extend([flow4, flow5, flow6])
+    
+    print(f"Joining Threads")
+    for thread in threads:
+        stdout, stderr = thread.result()
+        print(f"Error: ", stdout, stderr)
+    
+    r1.execute(f'sudo tc qdisc del dev eth1 root')
+    r3.execute(f'sudo tc qdisc del dev eth2 root')
+    r5.execute(f'sudo tc qdisc del dev eth1 root')
+    
+except Exception as e:
+    print(f"Exception: {e}")
+```
