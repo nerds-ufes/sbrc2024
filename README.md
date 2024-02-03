@@ -542,6 +542,8 @@ try:
     
     tcr5 = r5.execute_thread(f'sudo tc qdisc add dev eth1 root handle 1: htb default 10;\
                                sudo tc class add dev eth1 parent 1: classid 1:10 htb rate {rates[0]}')
+
+    threads.extend([tcr3, tcr5])
     
     flow4 = h1.execute_thread(f'iperf3 -c {target} -p {ports[3]} -i 2 -n {size} -J -Z | tee > flow4.json')
     flow5 = h1.execute_thread(f'iperf3 -c {target} -p {ports[4]} -i 2 -n {size} -J -Z -S 0x04 | tee > flow5.json')
