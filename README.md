@@ -1,6 +1,6 @@
 # SBRC2024
 
-Official repository for the paper "Sliced WANs for Data-Intensive Science: Deployment Experiences and Performance Analysis" to [SBRC 2024](https://sbrc.sbc.org.br/2024/).
+This repository contains the test artifacts and the scripts used to produce them for the paper "Sliced WANs for Data-Intensive Science: Deployment Experiences and Performance Analysis" to [SBRC 2024](https://sbrc.sbc.org.br/2024/).
 
 
 ## Abstract
