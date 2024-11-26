@@ -566,10 +566,14 @@ except Exception as e:
 ## How to cite this work?
 
 ### ABNT:
->PONTES, Edgard C.; ZANOTELLI, Vitor; MARTINELLO, Magnos; ROS-GIRALT, Jordi; BORGES, Everson S.; RIBEIRO, Moisés R. N.; NEWMAN, Harvey. Sliced WANs for Data-Intensive Science: Deployment Experiences and Performance Analysis. In: SIMPÓSIO BRASILEIRO DE REDES DE COMPUTADORES E SISTEMAS DISTRIBUÍDOS (SBRC), 42. , 2024, Niterói/RJ. Anais [...]. Porto Alegre: Sociedade Brasileira de Computação, 2024 . p. 461-474. ISSN 2177-9384. DOI: https://doi.org/10.5753/sbrc.2024.1425.
 
-### Bibtex:
->@inproceedings{sbrc,
+```bibtex
+PONTES, Edgard C.; ZANOTELLI, Vitor; MARTINELLO, Magnos; ROS-GIRALT, Jordi; BORGES, Everson S.; RIBEIRO, Moisés R. N.; NEWMAN, Harvey. Sliced WANs for Data-Intensive Science: Deployment Experiences and Performance Analysis. In: SIMPÓSIO BRASILEIRO DE REDES DE COMPUTADORES E SISTEMAS DISTRIBUÍDOS (SBRC), 42. , 2024, Niterói/RJ. Anais [...]. Porto Alegre: Sociedade Brasileira de Computação, 2024 . p. 461-474. ISSN 2177-9384. DOI: https://doi.org/10.5753/sbrc.2024.1425.
+```
+
+### BibTeX:
+```bibtex
+@inproceedings{sbrc,
  author = {Edgard Pontes and Vitor Zanotelli and Magnos Martinello and Jordi Ros-Giralt and Everson Borges and Moisés Ribeiro and Harvey Newman},
  title = { Sliced WANs for Data-Intensive Science: Deployment Experiences and Performance Analysis},
  booktitle = {Anais do XLII Simpósio Brasileiro de Redes de Computadores e Sistemas Distribuídos},
@@ -583,4 +587,17 @@ except Exception as e:
  doi = {10.5753/sbrc.2024.1425},
  url = {https://sol.sbc.org.br/index.php/sbrc/article/view/29812}
 }
+```
 
+### RefWorks:
+```bibtex
+@article{{sbrc}{},
+	author = {Pontes, E., Zanotelli, V., Martinello, M., Ros-Giralt, J., Borges, E., Ribeiro, M., Newman, H.},
+	title = { Sliced WANs for Data-Intensive Science: Deployment Experiences and Performance Analysis},
+	journal = {Anais do Simpósio Brasileiro de Redes de Computadores e Sistemas Distribuídos (SBRC)},
+
+	year = {2024},
+	doi = {10.5753/sbrc.2024.1425},
+	url = {https://sol.sbc.org.br/index.php/sbrc/article/view/29812}
+}
+```
