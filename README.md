@@ -563,3 +563,24 @@ try:
 except Exception as e:
     print(f"Exception: {e}")
 ```
+## How to cite this work?
+
+### ABNT:
+>PONTES, Edgard C.; ZANOTELLI, Vitor; MARTINELLO, Magnos; ROS-GIRALT, Jordi; BORGES, Everson S.; RIBEIRO, Moisés R. N.; NEWMAN, Harvey. Sliced WANs for Data-Intensive Science: Deployment Experiences and Performance Analysis. In: SIMPÓSIO BRASILEIRO DE REDES DE COMPUTADORES E SISTEMAS DISTRIBUÍDOS (SBRC), 42. , 2024, Niterói/RJ. Anais [...]. Porto Alegre: Sociedade Brasileira de Computação, 2024 . p. 461-474. ISSN 2177-9384. DOI: https://doi.org/10.5753/sbrc.2024.1425.
+
+### Bibtex:
+>@inproceedings{sbrc,
+ author = {Edgard Pontes and Vitor Zanotelli and Magnos Martinello and Jordi Ros-Giralt and Everson Borges and Moisés Ribeiro and Harvey Newman},
+ title = { Sliced WANs for Data-Intensive Science: Deployment Experiences and Performance Analysis},
+ booktitle = {Anais do XLII Simpósio Brasileiro de Redes de Computadores e Sistemas Distribuídos},
+ location = {Niterói/RJ},
+ year = {2024},
+ keywords = {},
+ issn = {2177-9384},
+ pages = {461--474},
+ publisher = {SBC},
+ address = {Porto Alegre, RS, Brasil},
+ doi = {10.5753/sbrc.2024.1425},
+ url = {https://sol.sbc.org.br/index.php/sbrc/article/view/29812}
+}
+
